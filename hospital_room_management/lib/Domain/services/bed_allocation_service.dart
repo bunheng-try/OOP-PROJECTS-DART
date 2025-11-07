@@ -8,16 +8,66 @@ class BedAllocationService {
   BedAllocationService(this.roomRepo);
 
   String assignPatientToBed(String bedNumber, String patientId) {
-    final bed = roomRepo.findBed(bedNumber);
-    if (bed == null) {
-      return 'Bed does not exist!';
+    try {
+      // 1. Find the bed
+      final bed = roomRepo.findBed(bedNumber);
+      if (bed == null) {
+        return 'Bed $bedNumber does not exist!';
+      }
+
+      // 2. Check if bed is available
+      if (bed.status != BedStatus.Available) {
+        return 'Bed $bedNumber is not available (Current status: ${bed.status.name})!';
+      }
+
+      // 3. Update bed status
+      bed.status = BedStatus.Occupied;
+      
+      return 'Patient $patientId assigned to bed $bedNumber successfully.';
+    } catch (e) {
+      return 'Error assigning patient to bed: $e';
     }
-    if (bed.status != BedStatus.Available) {
-      return 'Bed is not available!';
+  }
+
+  // Release bed functionality
+  String releaseBed(String bedNumber) {
+    try {
+      final bed = roomRepo.findBed(bedNumber);
+      if (bed == null) {
+        return 'Bed $bedNumber does not exist!';
+      }
+      if (bed.status != BedStatus.Occupied) {
+        return 'Bed $bedNumber is not occupied!';
+      }
+      
+      bed.status = BedStatus.Available;
+      return 'Bed $bedNumber released successfully.';
+    } catch (e) {
+      return 'Error releasing bed: $e';
     }
-    // Assign patient (expand as needed)
-    bed.status = BedStatus.Occupied;
-    // Save allocation record as needed
-    return 'Patient $patientId assigned to bed $bedNumber.';
+  }
+
+  // Find available beds
+  List<Bed> findAvailableBeds() {
+    final availableBeds = <Bed>[];
+    for (final room in roomRepo.rooms) {
+      for (final bed in room.beds) {
+        if (bed.status == BedStatus.Available) {
+          availableBeds.add(bed);
+        }
+      }
+    }
+    return availableBeds;
+  }
+
+  // Find beds by room type
+  List<Bed> findBedsByRoomType(RoomType roomType) {
+    final beds = <Bed>[];
+    for (final room in roomRepo.rooms) {
+      if (room.type == roomType) {
+        beds.addAll(room.beds);
+      }
+    }
+    return beds;
   }
 }

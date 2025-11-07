@@ -1,7 +1,7 @@
 import 'enums.dart';
 
 class Bed {
-  final String bedNumber;
+  String bedNumber;
   BedStatus status;
 
   Bed({required this.bedNumber, this.status = BedStatus.Available});
