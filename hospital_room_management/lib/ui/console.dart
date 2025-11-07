@@ -45,29 +45,58 @@ class ConsoleUI {
   }
 
   Future<void> registerPatient() async {
-    stdout.write("Enter Patient ID: ");
-    final id = stdin.readLineSync()!;
+  stdout.write("Enter Patient ID (Ex: 001): ");
+  final id = stdin.readLineSync()!;
+  String name;
+  while (true) {
     stdout.write("Name: ");
-    final name = stdin.readLineSync()!;
+    name = stdin.readLineSync()!;
+    if (RegExp(r'^[a-zA-Z\s]+$').hasMatch(name)) {
+      break;
+    } else {
+      print(" Invalid name. Use letters and spaces only.");
+    }
+  }
+  int age;
+  while (true) {
     stdout.write("Age: ");
-    final age = int.parse(stdin.readLineSync()!);
-    stdout.write("Condition: ");
-    final condition = stdin.readLineSync()!;
+    final input = stdin.readLineSync()!;
+    final parsed = int.tryParse(input);
+    if (parsed != null && parsed >= 0 && parsed <= 100) {
+      age = parsed;
+      break;
+    } else {
+      print(" Invalid age. Enter a number between 0 and 100.");
+    }
+  }
+  stdout.write("Condition: ");
+  final condition = stdin.readLineSync()!;
+  PatientPriority priority;
+  while (true) {
     stdout.write("Priority (Low/Medium/High): ");
     final priorityStr = stdin.readLineSync()!;
-    final priority = PatientPriority.values
-        .firstWhere((e) => e.name.toLowerCase() == priorityStr.toLowerCase());
-
-    final patient = Patient(
-      patientId: id,
-      name: name,
-      age: age,
-      medicalCondition: condition,
-      priority: priority,
-    );
-    // Save patient as needed
-    print("✅ Patient registered!");
+    try {
+      priority = PatientPriority.values.firstWhere(
+        (e) => e.name.toLowerCase() == priorityStr.toLowerCase(),
+      );
+      break;
+    } catch (e) {
+      print(" Invalid priority. Please enter Low, Medium, or High.");
+    }
   }
+
+  final patient = Patient(
+    patientId: id,
+    name: name,
+    age: age,
+    medicalCondition: condition,
+    priority: priority,
+  );
+
+  // Save patient as needed
+  print(" Patient registered successfully!");
+}
+
 
   Future<void> allocateBed() async {
     stdout.write("Patient ID: ");
@@ -81,7 +110,7 @@ class ConsoleUI {
   Future<void> releaseBed() async {
     stdout.write("Bed Number: ");
     final bedNum = stdin.readLineSync()!;
-    print("✅ Bed $bedNum released (not implemented)!");
+    print(" Bed $bedNum released (not implemented)!");
   }
 
   void showRoomsAndBeds() {

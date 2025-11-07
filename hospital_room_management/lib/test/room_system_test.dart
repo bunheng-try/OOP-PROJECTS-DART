@@ -6,7 +6,7 @@ import '../domain/models/bed_allocation.dart';
 
 void main() {
   test('Allocate a bed to a patient', () {
-    final bed = Bed(bedNumber: 'B1', roomNumber: '101');
+    final bed = Bed(bedNumber: 'B1');
     final patient = Patient(
         patientId: 'P1',
         name: 'Alice',
