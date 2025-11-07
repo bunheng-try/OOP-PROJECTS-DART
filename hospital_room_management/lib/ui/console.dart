@@ -92,8 +92,7 @@ class ConsoleUI {
     medicalCondition: condition,
     priority: priority,
   );
-
-  // Save patient as needed
+  
   print(" Patient registered successfully!");
 }
 
