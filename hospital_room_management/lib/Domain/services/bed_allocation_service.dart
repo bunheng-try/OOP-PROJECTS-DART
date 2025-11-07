@@ -1,45 +1,23 @@
-import '../../data/bed_repository.dart';
-import '../../data/patient_repository.dart';
-import '../../data/allocation_repository.dart';
+import '../../data/room_repository.dart';
+import '../models/bed.dart';
 import '../models/enums.dart';
-import '../models/bed_allocation.dart';
 
 class BedAllocationService {
-  final BedRepository bedRepo;
-  final PatientRepository patientRepo;
-  final AllocationRepository allocationRepo;
+  final RoomRepository roomRepo;
 
-  BedAllocationService(this.bedRepo, this.patientRepo, this.allocationRepo);
+  BedAllocationService(this.roomRepo);
 
-  Future<String> allocateBed(String patientId, String bedNumber) async {
-    final bed = await bedRepo.findByBedNumber(bedNumber);
-    if (bed == null || bed.status != BedStatus.Available) {
-      return "❌ Bed not available.";
+  String assignPatientToBed(String bedNumber, String patientId) {
+    final bed = roomRepo.findBed(bedNumber);
+    if (bed == null) {
+      return 'Bed does not exist!';
     }
-
-    final patient = await patientRepo.findById(patientId);
-    if (patient == null) return "❌ Patient not found.";
-
+    if (bed.status != BedStatus.Available) {
+      return 'Bed is not available!';
+    }
+    // Assign patient (expand as needed)
     bed.status = BedStatus.Occupied;
-    await bedRepo.updateBed(bed);
-
-    final allocation = BedAllocation(
-      allocationId: DateTime.now().millisecondsSinceEpoch.toString(),
-      patientId: patientId,
-      bedNumber: bedNumber,
-      startDate: DateTime.now(),
-    );
-
-    await allocationRepo.addAllocation(allocation);
-    return "✅ Bed ${bed.bedNumber} allocated to ${patient.name}.";
-  }
-
-  Future<String> releaseBed(String bedNumber) async {
-    final bed = await bedRepo.findByBedNumber(bedNumber);
-    if (bed == null) return "❌ Bed not found.";
-
-    bed.status = BedStatus.Available;
-    await bedRepo.updateBed(bed);
-    return "✅ Bed ${bed.bedNumber} is now available.";
+    // Save allocation record as needed
+    return 'Patient $patientId assigned to bed $bedNumber.';
   }
 }
