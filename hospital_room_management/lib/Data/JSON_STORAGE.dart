@@ -1,35 +1,15 @@
-import 'dart:convert';
 import 'dart:io';
+import 'dart:convert';
 
-class JSONStorage {
-  final String path;
-
-  JSONStorage(this.path);
-
-  Future<void> save(String filename, Map<String, dynamic> data) async {
-    final file = File('$path/$filename');
-    await file.create(recursive: true);
+class JsonStorage {
+  Future<void> saveJson(String path, List data) async {
+    final file = File(path);
     await file.writeAsString(jsonEncode(data));
   }
 
-  Future<Map<String, dynamic>?> read(String filename) async {
-    final file = File('$path/$filename');
-    if (!await file.exists()) return null;
-    final content = await file.readAsString();
-    return jsonDecode(content);
-  }
-
-  Future<void> saveList(String filename, List<Map<String, dynamic>> list) async {
-    final file = File('$path/$filename');
-    await file.create(recursive: true);
-    await file.writeAsString(jsonEncode(list));
-  }
-
-  Future<List<dynamic>?> readList(String filename) async {
-    final file = File('$path/$filename');
-    if (!await file.exists()) return null;
-    final content = await file.readAsString();
-    return jsonDecode(content);
+  Future<List> readJson(String path) async {
+    final file = File(path);
+    if (!file.existsSync()) return [];
+    return jsonDecode(await file.readAsString());
   }
 }
-// ai generated, because I dont know to store it in json yet

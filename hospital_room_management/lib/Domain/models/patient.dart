@@ -1,9 +1,11 @@
+import 'enums.dart';
+
 class Patient {
-  final int patientId;
+  final String patientId;
   final String name;
   final int age;
   final String medicalCondition;
-  final String priority; // Low, Medium, High
+  final PatientPriority priority;
 
   Patient({
     required this.patientId,
@@ -18,7 +20,7 @@ class Patient {
         'name': name,
         'age': age,
         'medicalCondition': medicalCondition,
-        'priority': priority,
+        'priority': priority.name,
       };
 
   factory Patient.fromJson(Map<String, dynamic> json) => Patient(
@@ -26,9 +28,7 @@ class Patient {
         name: json['name'],
         age: json['age'],
         medicalCondition: json['medicalCondition'],
-        priority: json['priority'],
+        priority: PatientPriority.values
+            .firstWhere((e) => e.name == json['priority']),
       );
-
-  @override
-  String toString() => 'Patient($name - $priority)';
 }
