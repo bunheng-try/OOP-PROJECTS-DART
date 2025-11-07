@@ -5,7 +5,7 @@ import '../domain/services/bed_allocation_service.dart';
 import '../domain/models/patient.dart';
 import '../domain/models/enums.dart';
 import '../domain/models/bed.dart';
-
+import 'dart:io';
 class ConsoleUI {
   final bedRepo = BedRepository();
   final patientRepo = PatientRepository();
