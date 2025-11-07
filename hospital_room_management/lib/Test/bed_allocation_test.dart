@@ -25,7 +25,7 @@ void main() {
 
     test('Allocates available bed', () {
       final p = Patient(
-        patientId: 'P1',
+        patientId: 001,
         name: 'Alice',
         age: 25,
         medicalCondition: 'Flu',
@@ -41,7 +41,7 @@ void main() {
 
     test('ICU patient must get ICU bed', () {
       final p = Patient(
-        patientId: 'P2',
+        patientId: 002,
         name: 'Bob',
         age: 40,
         medicalCondition: 'ICU Care',
@@ -60,9 +60,9 @@ void main() {
 
     test('Room capacity not exceeded', () {
       // General room (G1) has capacity 2 → only 2 patients allowed
-      final p1 = Patient(patientId: 'P1', name: 'A', age: 20, medicalCondition: 'Cold', priority: 'Low');
-      final p2 = Patient(patientId: 'P2', name: 'B', age: 30, medicalCondition: 'Flu', priority: 'Low');
-      final p3 = Patient(patientId: 'P3', name: 'C', age: 22, medicalCondition: 'Cold', priority: 'Low');
+      final p1 = Patient(patientId: 001, name: 'A', age: 20, medicalCondition: 'Cold', priority: 'Low');
+      final p2 = Patient(patientId: 002, name: 'B', age: 30, medicalCondition: 'Flu', priority: 'Low');
+      final p3 = Patient(patientId: 003, name: 'C', age: 22, medicalCondition: 'Cold', priority: 'Low');
 
       service.registerPatient(p1);
       service.registerPatient(p2);

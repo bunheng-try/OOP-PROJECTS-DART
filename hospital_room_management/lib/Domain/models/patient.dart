@@ -1,5 +1,5 @@
 class Patient {
-  final String patientId;
+  final int patientId;
   final String name;
   final int age;
   final String medicalCondition;

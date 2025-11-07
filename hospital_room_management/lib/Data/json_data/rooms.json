@@ -1,1 +1,32 @@
-[]
+[
+	{
+		"roomNumber": "R101",
+		"type": "General",
+		"floor": 1,
+		"capacity": 2,
+		"beds": [
+			{ "bedNumber": "B101-1", "status": "Available" },
+			{ "bedNumber": "B101-2", "status": "Available" }
+		]
+	},
+	{
+		"roomNumber": "ICU1",
+		"type": "ICU",
+		"floor": 1,
+		"capacity": 1,
+		"beds": [
+			{ "bedNumber": "ICU1-1", "status": "Available" }
+		]
+	},
+	{
+		"roomNumber": "R201",
+		"type": "General",
+		"floor": 2,
+		"capacity": 3,
+		"beds": [
+			{ "bedNumber": "B201-1", "status": "Occupied" },
+			{ "bedNumber": "B201-2", "status": "Available" },
+			{ "bedNumber": "B201-3", "status": "Maintenance" }
+		]
+	}
+]

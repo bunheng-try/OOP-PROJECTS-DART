@@ -47,7 +47,8 @@ class BedAllocation {
   Map<String, dynamic> toJson() => {
         'allocationId': allocationId,
         'patient': patient.toJson(),
-        'bed': bed.toJson(),
+    // include full bed snapshot (with room) inside allocation JSON
+    'bed': bed.toJsonWithRoom(),
         'startDate': startDate.toIso8601String(),
         'endDate': endDate?.toIso8601String(),
         'status': status,

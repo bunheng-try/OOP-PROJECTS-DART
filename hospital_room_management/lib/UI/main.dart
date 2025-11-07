@@ -38,10 +38,10 @@ Future<void> main() async {
     switch (input) {
       case '1':
         // Check Patient ID
-        String id;
+        int id;
         while (true) {
           stdout.write('Patient ID: ');
-          id = stdin.readLineSync()!;
+          id = int.parse(stdin.readLineSync()!);
           
           // Check for duplicate ID
           if (service.patients.any((p) => p.patientId == id)) {
@@ -83,9 +83,14 @@ Future<void> main() async {
             // Capitalize first letter for consistency
             priority = priority[0].toUpperCase() + priority.substring(1);
             break;
-          } else {
-            print(' Error: Please enter a valid priority (Low/Medium/High)');
-          }
+          } else if (['high'].contains(priority)) {
+            // Capitalize first letter for consistency
+            priority = priority[0].toUpperCase() + priority.substring(1);
+            print('Assigned to ICU room!!');
+            break;
+            } else {
+              print(' Error: Please enter a valid priority (Low/Medium/High)');
+            }
         }
 
         // Add patient to the service's patient list
@@ -148,11 +153,18 @@ Future<void> main() async {
         
         // Get room
         stdout.write('Enter Room Number: ');
-        final roomNum = stdin.readLineSync()!;
-        final room = service.rooms
-            .firstWhere(
-                (r) => r.roomNumber == roomNum,
-                orElse: () => throw Exception('Room not found'));
+        final roomNumRaw = stdin.readLineSync()!;
+        final roomNum = roomNumRaw.trim();
+        final room = service.rooms.firstWhere(
+            (r) => r.roomNumber.toLowerCase() == roomNum.toLowerCase(),
+            orElse: () {
+          // provide a helpful error listing available rooms
+          if (service.rooms.isEmpty) {
+            throw Exception('Room not found: $roomNum. No rooms are loaded.');
+          }
+          final available = service.rooms.map((r) => r.roomNumber).join(', ');
+          throw Exception('Room not found: $roomNum. Available rooms: $available');
+        });
         
         // Show available beds in selected room
         final availableBedsInRoom = service.beds
