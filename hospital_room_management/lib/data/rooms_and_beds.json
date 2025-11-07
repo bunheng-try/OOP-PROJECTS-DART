@@ -1,0 +1,46 @@
+{
+  "rooms": [
+    {
+      "roomNumber": "101",
+      "type": "General",
+      "floor": 1,
+      "capacity": 4,
+      "beds": [
+        {"bedNumber": "B1", "status": "Available"},
+        {"bedNumber": "B2", "status": "Available"},
+        {"bedNumber": "B3", "status": "Available"},
+        {"bedNumber": "B4", "status": "Available"}
+      ]
+    },
+    {
+      "roomNumber": "102",
+      "type": "General",
+      "floor": 1,
+      "capacity": 2,
+      "beds": [
+        {"bedNumber": "B5", "status": "Available"},
+        {"bedNumber": "B6", "status": "Available"}
+      ]
+    },
+    {
+      "roomNumber": "ICU1",
+      "type": "ICU",
+      "floor": 2,
+      "capacity": 2,
+      "beds": [
+        {"bedNumber": "ICU-B1", "status": "Available"},
+        {"bedNumber": "ICU-B2", "status": "Available"}
+      ]
+    },
+    {
+      "roomNumber": "201",
+      "type": "Private",
+      "floor": 2,
+      "capacity": 2,
+      "beds": [
+        {"bedNumber": "B7", "status": "Available"},
+        {"bedNumber": "B8", "status": "Available"}
+      ]
+    }
+  ]
+}
