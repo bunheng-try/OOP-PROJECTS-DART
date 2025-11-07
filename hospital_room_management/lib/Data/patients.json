@@ -1,1 +1,9 @@
-[{"patientId":"1","name":"Valy","age":19,"medicalCondition":"good","priority":"Low"},{"patientId":"001","name":"Heng","age":20,"medicalCondition":"Flu","priority":"Low"}]
+[
+  {
+    "patientId": "001",
+    "name": "Valy",
+    "age": 19,
+    "medicalCondition": "Flu",
+    "priority": "Medium"
+  }
+]

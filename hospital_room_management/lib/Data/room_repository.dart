@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import '../domain/models/room.dart';
 import '../domain/models/bed.dart';
-
+//AI generated code for room repository
 class RoomRepository {
   final List<Room> rooms;
 

@@ -1,19 +1,40 @@
 import '../domain/models/patient.dart';
 import 'json_storage.dart';
-
+//AI generated code for PatientRepository using JsonStorage
 class PatientRepository {
-  final storage = JsonStorage();
+  final JsonStorage storage = JsonStorage();
   final String file = 'data/patients.json';
 
   Future<List<Patient>> getAllPatients() async {
-    final data = await storage.readJson(file);
-    return data.map((e) => Patient.fromJson(e)).toList();
+    try {
+      final data = await storage.readJson(file);
+      if (data is List) {
+        return data.map((e) => Patient.fromJson(e)).toList();
+      }
+      return [];
+    } catch (e) {
+      print("Error reading patients: $e");
+      return [];
+    }
   }
 
   Future<void> addPatient(Patient patient) async {
-    final patients = await getAllPatients();
-    patients.add(patient);
-    await storage.saveJson(file, patients.map((e) => e.toJson()).toList());
+    try {
+      final patients = await getAllPatients();
+      
+      // Check if patient already exists and remove if so (to update)
+      patients.removeWhere((p) => p.patientId == patient.patientId);
+      
+      // Add the new patient
+      patients.add(patient);
+      
+      // Save to JSON file
+      await storage.saveJson(file, patients.map((e) => e.toJson()).toList());
+      print("Patient ${patient.patientId} saved to JSON successfully.");
+    } catch (e) {
+      print("Error saving patient: $e");
+      rethrow;
+    }
   }
 
   Future<Patient?> findById(String id) async {
@@ -23,5 +44,5 @@ class PatientRepository {
     } catch (e) {
       return null;
     }
-}
+  }
 }

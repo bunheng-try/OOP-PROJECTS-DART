@@ -1,4 +1,5 @@
 import '../data/room_repository.dart';
+import '../data/patient_repository.dart';
 import '../domain/services/bed_allocation_service.dart';
 import '../domain/models/patient.dart';
 import '../domain/models/enums.dart';
@@ -9,8 +10,9 @@ import 'dart:io';
 class ConsoleUI {
   final RoomRepository roomRepo;
   final BedAllocationService service;
+  final PatientRepository patientRepo;
 
-  ConsoleUI(this.roomRepo, this.service);
+  ConsoleUI(this.roomRepo, this.service, this.patientRepo);
 
   Future<void> run() async {
     print("=== Hospital Bed Management System ===");
@@ -21,7 +23,8 @@ class ConsoleUI {
       print("3. Release Bed");
       print("4. Show All Rooms & Beds");
       print("5. Show Available Beds");
-      print("6. Exit");
+      print("6. Show All Patients");
+      print("7. Exit");
       stdout.write("Choose: ");
       final choice = stdin.readLineSync();
 
@@ -42,6 +45,9 @@ class ConsoleUI {
           showAvailableBeds();
           break;
         case '6':
+          await showAllPatients();
+          break;
+        case '7':
           print("Goodbye!");
           return;
         default:
@@ -72,6 +78,9 @@ class ConsoleUI {
         medicalCondition: condition,
         priority: priority,
       );
+      
+      // Save patient to JSON using PatientRepository
+      await patientRepo.addPatient(patient);
       print("Patient $id registered successfully!");
     } catch (e) {
       print("Error registering patient: $e");
@@ -82,6 +91,14 @@ class ConsoleUI {
     try {
       stdout.write("Patient ID: ");
       final pid = stdin.readLineSync()!;
+      
+      // Check if patient exists before allocating bed
+      final patient = await patientRepo.findById(pid);
+      if (patient == null) {
+        print("Error: Patient $pid not found. Please register patient first.");
+        return;
+      }
+      
       stdout.write("Bed Number: ");
       final bedNum = stdin.readLineSync()!;
       
@@ -121,31 +138,44 @@ class ConsoleUI {
   }
 
   void showAvailableBeds() {
-  final availableBeds = service.findAvailableBeds();
-  
-  if (availableBeds.isEmpty) {
-    print("No available beds found.");
-    return;
-  }
+    final availableBeds = service.findAvailableBeds();
+    
+    if (availableBeds.isEmpty) {
+      print("No available beds found.");
+      return;
+    }
 
-  print("Available Beds (${availableBeds.length}):");
-  
-  // Simple approach - just show bed numbers
-  for (final bed in availableBeds) {
-    print("  - Bed ${bed.bedNumber}");
-  }
-  
-  // OR if you want room info, use this approach:
-  for (final room in roomRepo.rooms) {
-    final availableBedsInRoom = room.beds.where((bed) => bed.status == BedStatus.Available).toList();
-    if (availableBedsInRoom.isNotEmpty) {
-      print("Room ${room.roomNumber} (${room.type.name}):");
-      for (final bed in availableBedsInRoom) {
-        print("  - Bed ${bed.bedNumber}");
+    print("Available Beds (${availableBeds.length}):");
+    
+    // Group by room
+    for (final room in roomRepo.rooms) {
+      final availableBedsInRoom = room.beds.where((bed) => bed.status == BedStatus.Available).toList();
+      if (availableBedsInRoom.isNotEmpty) {
+        print("Room ${room.roomNumber} (${room.type.name}):");
+        for (final bed in availableBedsInRoom) {
+          print("  - Bed ${bed.bedNumber}");
+        }
       }
     }
   }
-}
+
+  Future<void> showAllPatients() async {
+    try {
+      final patients = await patientRepo.getAllPatients();
+      
+      if (patients.isEmpty) {
+        print("No patients registered.");
+        return;
+      }
+
+      print("Registered Patients (${patients.length}):");
+      for (final patient in patients) {
+        print("  ID: ${patient.patientId}, Name: ${patient.name}, Age: ${patient.age}, Condition: ${patient.medicalCondition}, Priority: ${patient.priority.name}");
+      }
+    } catch (e) {
+      print("Error loading patients: $e");
+    }
+  }
 
   Room? _findRoomByBed(Bed targetBed) {
     for (final room in roomRepo.rooms) {

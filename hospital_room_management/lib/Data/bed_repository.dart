@@ -1,6 +1,6 @@
 import '../domain/models/bed.dart';
 import 'json_storage.dart';
-
+//AI generated code for bed repository
 class BedRepository {
   final storage = JsonStorage();
   final String file = 'data/beds.json';
