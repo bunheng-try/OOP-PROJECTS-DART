@@ -18,8 +18,12 @@ class BedRepository {
 
   Future<Bed?> findByBedNumber(String bedNumber) async {
     final beds = await getAllBeds();
-    return beds.firstWhere((b) => b.bedNumber == bedNumber, orElse: () => null);
-  }
+    try {
+      return beds.firstWhere((b) => b.bedNumber == bedNumber);
+    } catch (e) {
+      return null;
+    }
+}
 
   Future<void> updateBed(Bed bed) async {
     final beds = await getAllBeds();

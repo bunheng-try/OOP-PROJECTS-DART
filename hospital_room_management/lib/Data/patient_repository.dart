@@ -18,6 +18,10 @@ class PatientRepository {
 
   Future<Patient?> findById(String id) async {
     final patients = await getAllPatients();
-    return patients.firstWhere((p) => p.patientId == id, orElse: () => null);
-  }
+    try {
+      return patients.firstWhere((p) => p.patientId == id);
+    } catch (e) {
+      return null;
+    }
+}
 }
