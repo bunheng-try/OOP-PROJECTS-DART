@@ -14,8 +14,6 @@ void main() {
       service = AllocationService();
       genRoom = Room(roomNumber: 'G1', type: 'General', floor: 1, capacity: 2);
       icuRoom = Room(roomNumber: 'ICU1', type: 'ICU', floor: 1, capacity: 1);
-      service.addRoom(genRoom);
-      service.addRoom(icuRoom);
 
       // Beds for general room
       service.addBed(Bed(bedNumber: 'B1', room: genRoom));

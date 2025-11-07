@@ -1,5 +1,4 @@
-import 'dart:math';
-
+import '../../Data/JSON_STORAGE.dart';
 import '../models/room.dart';
 import '../models/bed.dart';
 import '../models/patient.dart';
@@ -11,60 +10,89 @@ class AllocationService {
   final List<Patient> patients = [];
   final List<BedAllocation> allocations = [];
 
-  String _generateId() {
-  final random = Random();
-  return (1000 + random.nextInt(9000)).toString(); 
-}
+  final storage = JSONStorage("lib/Data/json_data");
 
-
-  void addRoom(Room room) => rooms.add(room);
-  void addBed(Bed bed) => beds.add(bed);
-  void registerPatient(Patient patient) => patients.add(patient);
-
-  List<Bed> findAvailableBeds({String? type}) {
-    return beds.where((b) => b.isAvailable && (type == null || b.room.type == type)).toList();
+  void addBed(Bed bed) {
+    beds.add(bed);
+    if (!rooms.any((r) => r.roomNumber == bed.room.roomNumber)) {
+      rooms.add(bed.room);
+    }
   }
 
-  int occupancy(Room room) =>
-      allocations.where((a) => a.bed.room.roomNumber == room.roomNumber && a.status == 'Active').length;
-
-  bool _roomHasSpace(Room room) => occupancy(room) < room.capacity;
-
-  BedAllocation allocateBed({
-    required String bedNumber,
-    required Patient patient,
-  }) {
-    final bed = beds.firstWhere((b) => b.bedNumber == bedNumber, orElse: () => throw Exception('Bed not found'));
-    if (!bed.isAvailable) throw Exception('Bed not available');
-
-    // ICU patient must go to ICU bed
-    if (patient.priority == 'High' || patient.medicalCondition.toLowerCase().contains('icu')) {
-      if (bed.room.type != 'ICU') throw Exception('ICU patient requires ICU bed');
+  void registerPatient(Patient patient) {
+    if (patients.any((p) => p.patientId == patient.patientId)) {
+      throw Exception('Patient ID already exists');
     }
+    patients.add(patient);
+  }
 
-    // Room capacity check
-    if (!_roomHasSpace(bed.room)) {
-      throw Exception('Room ${bed.room.roomNumber} is full');
-    }
+  List<BedAllocation> get activeAllocations => 
+      allocations.where((a) => a.status == 'Active').toList();
 
-    final allocation = BedAllocation(
-      allocationId: _generateId(),
-      patient: patient,
-      bed: bed,
-      startDate: DateTime.now(),
+  BedAllocation allocateBed({required String bedNumber, required Patient patient}) {
+    final bed = beds.firstWhere(
+      (b) => b.bedNumber == bedNumber,
+      orElse: () => throw Exception('Bed not found'),
     );
 
+    if (!bed.isAvailable) {
+      throw Exception('Bed not available');
+    }
+
+    // Check if ICU patient is getting ICU bed
+    if (patient.medicalCondition.toLowerCase().contains('icu') && 
+        bed.room.type != 'ICU') {
+      throw Exception('ICU patient must be allocated to an ICU bed');
+    }
+
+    // Check room capacity
+    final activeInRoom = activeAllocations
+        .where((a) => a.bed.room.roomNumber == bed.room.roomNumber)
+        .length;
+    
+    if (activeInRoom >= bed.room.capacity) {
+      throw Exception('Room capacity exceeded');
+    }
+    
     bed.status = 'Occupied';
+    final allocation = BedAllocation(
+      allocationId: DateTime.now().millisecondsSinceEpoch.toString(),
+      bed: bed,
+      patient: patient,
+      startDate: DateTime.now(),
+    );
     allocations.add(allocation);
+    saveAll();
     return allocation;
   }
 
   void discharge(String allocationId) {
-    final alloc = allocations.firstWhere((a) => a.allocationId == allocationId);
-    alloc.status = 'Completed';
-    alloc.bed.status = 'Available';
+    final allocation = allocations.firstWhere(
+      (a) => a.allocationId == allocationId,
+      orElse: () => throw Exception('Allocation not found'),
+    );
+    
+    allocation.complete();
+    allocation.bed.status = 'Available';
+    saveAll();
   }
 
-  List<BedAllocation> get activeAllocations =>
-      allocations.where((a) => a.status == 'Active').toList();
+  Future<void> saveAll() async {
+    await storage.saveList("rooms.json", rooms.map((e) => e.toJson()).toList());
+    await storage.saveList("beds.json", beds.map((e) => e.toJson()).toList());
+    await storage.saveList("patients.json", patients.map((e) => e.toJson()).toList());
+    await storage.saveList("allocations.json", allocations.map((e) => e.toJson()).toList());
+  }
+
+  Future<void> loadAll() async {
+    final r = await storage.readList("rooms.json");
+    final b = await storage.readList("beds.json");
+    final p = await storage.readList("patients.json");
+    final a = await storage.readList("allocations.json");
+
+    if (r != null) rooms.addAll(r.map((e) => Room.fromJson(e)));
+    if (b != null) beds.addAll(b.map((e) => Bed.fromJson(e)));
+    if (p != null) patients.addAll(p.map((e) => Patient.fromJson(e)));
+    if (a != null) allocations.addAll(a.map((e) => BedAllocation.fromJson(e)));
+  }
 }
