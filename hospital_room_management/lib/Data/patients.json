@@ -5,5 +5,12 @@
     "age": 19,
     "medicalCondition": "Flu",
     "priority": "Medium"
+  },
+  {
+    "patientId": "002",
+    "name": "Bunheng",
+    "age": 20,
+    "medicalCondition": "Flu",
+    "priority": "High"
   }
 ]
