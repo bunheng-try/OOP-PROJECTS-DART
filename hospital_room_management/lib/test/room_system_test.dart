@@ -9,7 +9,7 @@ void main() {
     // Remove roomNumber parameter since Bed doesn't have it
     final bed = Bed(bedNumber: 'B1'); // Fixed: removed roomNumber
     final patient = Patient(
-        patientId: 'P1',
+        patientId: 'P001',
         name: 'Alice',
         age: 30,
         medicalCondition: 'Fever',
@@ -21,6 +21,6 @@ void main() {
         startDate: DateTime.now());
 
     expect(bed.status, BedStatus.Available);
-    expect(allocation.patientId, equals('P1'));
+    expect(allocation.patientId, equals('P001'));
   });
 }

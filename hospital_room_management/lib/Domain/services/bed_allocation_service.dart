@@ -47,7 +47,6 @@ class BedAllocationService {
     }
   }
 
-  // Find available beds
   List<Bed> findAvailableBeds() {
     final availableBeds = <Bed>[];
     for (final room in roomRepo.rooms) {

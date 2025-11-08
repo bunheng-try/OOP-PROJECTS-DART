@@ -1,13 +1,13 @@
 [
   {
-    "patientId": "001",
+    "patientId": "P001",
     "name": "Valy",
     "age": 19,
     "medicalCondition": "Flu",
     "priority": "Medium"
   },
   {
-    "patientId": "002",
+    "patientId": "P002",
     "name": "Bunheng",
     "age": 20,
     "medicalCondition": "Flu",

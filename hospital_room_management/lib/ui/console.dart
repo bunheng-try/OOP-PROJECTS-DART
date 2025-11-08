@@ -58,15 +58,13 @@ class ConsoleUI {
 
   Future<void> registerPatient() async {
     try {
-          stdout.write("Enter Patient ID (Ex: 001): ");
+          stdout.write("Enter Patient ID (Ex: P001): ");
           final id = stdin.readLineSync()!;
-    // ✅ Check if patient ID already exists
           final existingPatient = await patientRepo.findById(id);
           if (existingPatient != null) {
           print(" Patient ID '$id' already exists. Please use a different ID.");
           return;
           }
-  // Validate name: only letters and spaces
         String name;
         while (true) {
           stdout.write("Name: ");
@@ -91,7 +89,6 @@ class ConsoleUI {
         }
         stdout.write("Condition: ");
         final condition = stdin.readLineSync()!;
-  // Validate priority
         PatientPriority priority;
         while (true) {
         stdout.write("Priority (Low/Medium/High): ");
@@ -112,8 +109,6 @@ class ConsoleUI {
         medicalCondition: condition,
         priority: priority,
       );
-      
-      // Save patient to JSON using PatientRepository
       await patientRepo.addPatient(patient);
       print("Patient $id registered successfully!");
     } catch (e) {
@@ -125,8 +120,6 @@ class ConsoleUI {
     try {
       stdout.write("Patient ID: ");
       final pid = stdin.readLineSync()!;
-      
-      // Check if patient exists before allocating bed
       final patient = await patientRepo.findById(pid);
       if (patient == null) {
         print("Error: Patient $pid not found. Please register patient first.");
@@ -142,7 +135,6 @@ class ConsoleUI {
       print("Error during bed allocation: $e");
     }
   }
-
   Future<void> releaseBed() async {
     try {
       stdout.write("Bed Number to release: ");
