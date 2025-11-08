@@ -58,19 +58,53 @@ class ConsoleUI {
 
   Future<void> registerPatient() async {
     try {
-      stdout.write("Enter Patient ID: ");
-      final id = stdin.readLineSync()!;
-      stdout.write("Name: ");
-      final name = stdin.readLineSync()!;
-      stdout.write("Age: ");
-      final age = int.parse(stdin.readLineSync()!);
-      stdout.write("Condition: ");
-      final condition = stdin.readLineSync()!;
-      stdout.write("Priority (Low/Medium/High): ");
-      final priorityStr = stdin.readLineSync()!;
-      final priority = PatientPriority.values
-          .firstWhere((e) => e.name.toLowerCase() == priorityStr.toLowerCase());
-
+          stdout.write("Enter Patient ID (Ex: 001): ");
+          final id = stdin.readLineSync()!;
+    // ✅ Check if patient ID already exists
+          final existingPatient = await patientRepo.findById(id);
+          if (existingPatient != null) {
+          print(" Patient ID '$id' already exists. Please use a different ID.");
+          return;
+          }
+  // Validate name: only letters and spaces
+        String name;
+        while (true) {
+          stdout.write("Name: ");
+          name = stdin.readLineSync()!;
+          if (RegExp(r'^[a-zA-Z\s]+$').hasMatch(name)) {
+            break;
+          } else {
+            print(" Invalid name. Use letters and spaces only.");
+          }
+        }
+        int age;
+        while (true) {
+          stdout.write("Age: ");
+          final input = stdin.readLineSync()!;
+          final parsed = int.tryParse(input);
+          if (parsed != null && parsed >= 0 && parsed <= 100) {
+            age = parsed;
+            break;
+          } else {
+            print(" Invalid age. Enter a number between 0 and 100.");
+          }
+        }
+        stdout.write("Condition: ");
+        final condition = stdin.readLineSync()!;
+  // Validate priority
+        PatientPriority priority;
+        while (true) {
+        stdout.write("Priority (Low/Medium/High): ");
+        final priorityStr = stdin.readLineSync()!;
+        try {
+          priority = PatientPriority.values.firstWhere(
+            (e) => e.name.toLowerCase() == priorityStr.toLowerCase(),
+          );
+          break;
+        } catch (e) {
+          print(" Invalid priority. Please enter Low, Medium, or High.");
+        }
+      }
       final patient = Patient(
         patientId: id,
         name: name,
