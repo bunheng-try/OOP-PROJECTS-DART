@@ -1,8 +1,8 @@
 import 'package:test/test.dart';
-import '../lib/domain/models/bed.dart';
-import '../lib/domain/models/patient.dart';
-import '../lib/domain/models/enums.dart';
-import '../lib/domain/models/bed_allocation.dart';
+import '../domain/models/bed.dart';
+import '../domain/models/patient.dart';
+import '../domain/models/enums.dart';
+import '../domain/models/bed_allocation.dart';
 
 void main() {
   test('Allocate a bed to a patient', () {
